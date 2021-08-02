@@ -17,17 +17,9 @@ import numpy as np
 from rasterio.mask import mask
 
 channel_to_number = {"B01":0, "B02":1, "B03":2, "B04":3, "B05":4, "B06":5, "B07":6, "B08":7,
-                     "B09":8, "B11":9, "B12":10, "B8A":11, "CLM":None, "VEG_IDX": 12, "MOIST_IDX": 13, "NDVI_IDX": 14}
+                     "B09":8, "B11":9, "B12":10, "B8A":11, "CLM":None, "BS_IDX": 12, "MOIST_IDX": 13, "NDVI_IDX": 14}
 number_to_channel = {number: channel for channel, number in channel_to_number.items()}
 
-
-def create_vegindex(image, channel_to_number):
-    image_B8 = image[channel_to_number['B08'],:,:]
-    image_B4 = image[channel_to_number['B04'],:,:]
-    non_zero = (image_B8 + image_B4 != 0)
-    vegetation_index = np.zeros((image.shape[1], image.shape[2]))
-    vegetation_index[non_zero] = np.nan_to_num((image_B8[non_zero] - image_B4[non_zero]) / (image_B8[non_zero] + image_B4[non_zero]))
-    return vegetation_index
 
 def create_ndviindex(image, channel_to_number):
     image_B08 = image[channel_to_number['B08'],:,:]
@@ -35,6 +27,13 @@ def create_ndviindex(image, channel_to_number):
     non_zero = (image_B08 + image_B04 != 0)
     ndvi_index = np.zeros((image.shape[1], image.shape[2]))
     ndvi_index[non_zero] = np.nan_to_num((image_B08[non_zero] - image_B04[non_zero]) / (image_B08[non_zero] + image_B04[non_zero]))
+    
+    upper_limit = 1
+    lower_limit = -0.2
+    
+    ndvi_index = np.where(ndvi_index > lower_limit, ndvi_index , lower_limit)
+    ndvi_index = np.where(ndvi_index < upper_limit, ndvi_index , upper_limit)
+    
     return ndvi_index
 
 def create_moistureindex(image, channel_to_number):
@@ -43,7 +42,28 @@ def create_moistureindex(image, channel_to_number):
     non_zero = (image_B8A + image_B11 != 0)
     moisture_index = np.zeros((image.shape[1], image.shape[2]))
     moisture_index[non_zero] = np.nan_to_num((image_B8A[non_zero] - image_B11[non_zero]) / (image_B8A[non_zero] + image_B11[non_zero]))
+    
+    upper_limit = 0.8
+    lower_limit = -0.8
+    
+    moisture_index = np.where(moisture_index > lower_limit, moisture_index , lower_limit)
+    moisture_index = np.where(moisture_index < upper_limit, moisture_index , upper_limit)
+    
     return moisture_index
+
+def create_baresoilindex(image, channel_to_number):
+    
+    # Other option found: NBSI = ((B11 + B04)-(B08 + B02))/((B11 + B04)+(B08 + B02))
+    
+    image_B08 = image[channel_to_number['B08'],:,:]
+    image_B03 = image[channel_to_number['B03'],:,:]
+    image_B04 = image[channel_to_number['B04'],:,:]
+    
+    non_zero = (image_B08 - image_B03 - image_B04 != 0)
+    baresoil_index = np.zeros((image.shape[1], image.shape[2]))
+    baresoil_index[non_zero] = np.nan_to_num((image_B08[non_zero] + image_B03[non_zero] + image_B04[non_zero]) / (image_B08[non_zero] - image_B03[non_zero] - image_B03[non_zero]))
+    
+    return baresoil_index
 
 def mean_var(image, number_to_channel):
     """
@@ -96,7 +116,7 @@ def mask_mean_var(image_stacked, field_ids_tile, field_id, channel_to_number, nu
     image_with_idx = np.zeros((image_cropped.shape[0] + 3, image_cropped.shape[1], image_cropped.shape[2]))
     image_with_idx[0:image_cropped.shape[0],:,:] = image_cropped
     
-    image_with_idx[channel_to_number['VEG_IDX'],:,:] = create_vegindex(image_cropped, channel_to_number)
+    image_with_idx[channel_to_number['BS_IDX'],:,:] = create_baresoilindex(image_cropped, channel_to_number)
     image_with_idx[channel_to_number['MOIST_IDX'],:,:] = create_moistureindex(image_cropped, channel_to_number)
     image_with_idx[channel_to_number['NDVI_IDX'],:,:] = create_ndviindex(image_cropped, channel_to_number)
     
