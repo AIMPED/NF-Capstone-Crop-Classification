@@ -16,7 +16,7 @@ import elevation
 import numpy as np
 from rasterio.mask import mask
 
-from shutil import copyfile
+from shutil import copy
 
 from pathlib import Path
 
@@ -44,25 +44,34 @@ def create_stacked_NN(assets_df ,tiles, satellite, num_days, train):
     asset_list = assets_df.query(f'satellite_platform == "s2"')['asset'].unique()
     assets_df_temp = pd.DataFrame(columns=['tile_id','datetime','satellite_platform','asset','file_path','date','month','dayofyear'])
 
-    for tile_id in tile_ids[:100]:
+    if train == True:
+        ind_path = 'train'
+    else:
+        ind_path = 'test'
+    
+    for tile_id in tile_ids:
         clear_output(wait=True)
         print(tile_id)
-        Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/').mkdir(parents=True, exist_ok=True)
+        Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/').mkdir(parents=True, exist_ok=True)
+        
+
         
         if train == True:
             path_orig = assets_df.query(f'asset == "labels" & tile_id == @tile_id').iloc[0,4]            
-            copy(path_orig, f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/labels.tif')
-            path_orig = assets_df.query(f'asset == "field_ids" & tile_id == @tile_id').iloc[0,4]    
-            copy(path_orig, f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/field_ids.tif')
+            copy(path_orig, f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/labels.tif')
+            
+        path_orig = assets_df.query(f'asset == "field_ids" & tile_id == @tile_id').iloc[0,4]    
+        copy(path_orig, f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/field_ids.tif')
     
+        
         
         if satellite == "s2":
             days_available = "clean_days"
-            Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/s2/').mkdir(parents=True, exist_ok=True)
+            Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/s2/').mkdir(parents=True, exist_ok=True)
             
         elif satellite == "s1":
             days_available = "s1_days"
-            Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/s1/').mkdir(parents=True, exist_ok=True)
+            Path(f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/s1/').mkdir(parents=True, exist_ok=True)
             
         clean_days = sorted(list(tiles.query('tile_id == @tile_id')[days_available].iloc[0]))
         assist_select = np.linspace(0, len(clean_days)-1, num = num_days, dtype=np.int)
@@ -73,7 +82,7 @@ def create_stacked_NN(assets_df ,tiles, satellite, num_days, train):
             # create path to save file to
             #path_write = "/".join(assets_tile_df.iloc[0,4].split("/")[0:-1]) + '/s2_stacked.tif'
             
-            path_write = f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN/{tile_id}/{satellite}/{tile_id}_{satellite}_{day}_stacked.tif'
+            path_write = f'/home/jupyter/NF-Capstone-Crop-Classification/stacked_files_CNN_{ind_path}/{tile_id}/{satellite}/{tile_id}_{satellite}_{day}_stacked.tif'
             
             create_tile_stacked(tile_id, day, path_write, assets_tile_df, asset_list)
 
