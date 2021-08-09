@@ -8,5 +8,5 @@ shapely
 geopandas
 tensorflow
 elevation
-
+rasterio
 
