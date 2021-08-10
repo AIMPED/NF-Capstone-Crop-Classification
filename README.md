@@ -9,12 +9,10 @@ At first glance, it merely looks like a submission to the competition [Radiant E
 
 But it really is the final step of the Data Science Bootcamp with neuefische GmbH. Three participants teamed up to ***WhoKeras*** and used their knowledge gained during 12 weeks of intense learning.
 
----
 ## ***Scope***
 
 The competition consists in predicting the crop type of agricultural cultivation fields in South Africa, specifically in the Western Cape. The necessary data has been provided by the competition owner.
 
----
 ## ***Data description***
 
 The supplied data consists of a time series of multispectral satellite images taken by two different satellites, [Sentinel-1](https://sentinel.esa.int/web/sentinel/missions/sentinel-1) and [Sentinel-2](https://sentinel.esa.int/web/sentinel/missions/sentinel-2). In addition to the above, the field boundaries are given as well. Finally, the data set is split into train- and test data.
@@ -27,12 +25,7 @@ The supplied data consists of a time series of multispectral satellite images ta
 ## ***Evaluation metric***
 The competition owner prescribed the evaluation metric to use. In this case, the Cross-Entropy-Loss is used.
 
----
 ## ***Technical approach***
-
-### ***EDA***
-A intense EDA has been conducted....
-
 
 ### ***Feature engineering***
 Extensive Feature Engineering has been conducted. As a first idea, we wanted to ***use the metadata only*** to train a model and then finally predict the crop type.
@@ -56,19 +49,15 @@ Extensive Feature Engineering has been conducted. As a first idea, we wanted to 
 
 ### ***Model selection***
 
-As baseline model a AdaBoost Classifier has been used. 
-- Cross-Entropy-Loss: 2.14
-- Accuracy: 0.53
+As baseline model a AdaBoost Classifier has been used. The second model was based on a basic neural network (Keras) which consisted of dense layers and drop out layers. This layout increased the obtained accuracy values. Up to this point, the actual ***multispectral satellite images were not used***, only in terms of feature engineering (mean value and variance of each field).
 
-The second model was based on a basic neural network (Keras) which consisted of 3 dense layers and the corresponding drop out layers. This layout increased the obtained accuracy values. 
-Up to this point, the actual ***multispectral satellite images were not used***, only in terms of feature engineering (mean value and variance of each field).
+The last model which has been developed is based on CNN with a LSTM layer.
 
----
-## Python environment
+## Python environment (WIP)
 
-Python xxx. has been used, the development envoirnment can be recreated using the  [requirements.txt](requirements.txt) file. 
+Python xxx. has been used, the development envoirnment can be recreated using the [requirements.txt](requirements.txt) file. 
 
 ## The Team
-- [The Visionaire](https://github.com/PerezCorrea)
-- [The Pioneer](https://github.com/AdrianTheopold/)
-- [The Godfather](https://github.com/AIMPED/)
+- [PerezCorrea](https://github.com/PerezCorrea)
+- [AdrainTheopold](https://github.com/AdrianTheopold/)
+- [AIMPED](https://github.com/AIMPED/)
