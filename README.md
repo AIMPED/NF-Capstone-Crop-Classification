@@ -7,7 +7,9 @@
 
 At first glance, it merely looks like a submission to the competition [Radiant Earth Spot the Crop XL Challenge](https://zindi.africa/competitions/radiant-earth-spot-the-crop-xl-challenge) on the Zindi community website. 
 
-But it really is the final step of the Data Science Bootcamp with neuefische GmbH. Three participants teamed up to ***WhoKeras*** and used their knowledge gained during 12 weeks of intense learning.
+But it really is the final step of the Data Science Bootcamp with neuefische GmbH. Three participants teamed up to ***WhoKeras*** and used their knowledge gained during 12 weeks of intense learning. 
+
+[result](https://drive.google.com/file/d/1w9xoRebIJW5QgGtH4b0s4LpdXFXj8tNT/view)
 
 ## ***Scope***
 
